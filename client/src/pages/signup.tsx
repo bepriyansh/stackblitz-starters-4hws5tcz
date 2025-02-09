@@ -2,15 +2,16 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
-import { loginUser } from "@/services/api";
+import { signupUser } from "@/services/api";
 
-const Login = () => {
+const Signup = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    role: "user",
   });
 
   const handleChange = (name: string, value: string) => {
@@ -18,7 +19,6 @@ const Login = () => {
       ...prev,
       [name]: value,
     }));
-
     if (error) setError(null);
   };
 
@@ -28,15 +28,13 @@ const Login = () => {
     setError(null);
 
     try {
-      const response = await loginUser(formData);
-      if (response.success && response.token) {
+      const response = await signupUser(formData);
+      if (response.token) {
         localStorage.setItem("token", response.token);
         navigate("/");
-      } else {
-        setError(response.message || "Login failed");
       }
     } catch (err: any) {
-      setError(err.message || "Failed to login. Please try again.");
+      setError(err.message || "Failed to signup. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -47,7 +45,7 @@ const Login = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
+            Create your account
           </h2>
         </div>
 
@@ -71,7 +69,6 @@ const Login = () => {
               onChange={(e) => handleChange("email", e.target.value)}
               placeholder="Enter your email"
               className="w-full"
-              errorMessage={error ? " " : undefined}
             />
 
             <Input
@@ -82,7 +79,6 @@ const Login = () => {
               onChange={(e) => handleChange("password", e.target.value)}
               placeholder="Enter your password"
               className="w-full"
-              errorMessage={error ? " " : undefined}
             />
           </div>
 
@@ -94,17 +90,17 @@ const Login = () => {
               isLoading={isLoading}
               disabled={isLoading}
             >
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? "Creating account..." : "Sign up"}
             </Button>
           </div>
 
           <div className="text-center text-sm text-gray-600">
-            Don't have an account?{" "}
+            Already have an account?{" "}
             <a
-              href="/signup"
+              href="/login"
               className="font-medium text-indigo-600 hover:text-indigo-500"
             >
-              Sign up here
+              Sign in here
             </a>
           </div>
         </form>
@@ -113,4 +109,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;

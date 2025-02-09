@@ -6,13 +6,54 @@ const JWT_SECRET = "hellohowareyou";
 
 export const signup = async (req, res) => {
   try {
-    const { email, password, role } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ email, password: hashedPassword, role });
+    console.log("Request body:", req.body); // Add this debug log
+
+    const { email, password, role = "user" } = req.body;
+
+    console.log("Parsed values:", { email, password, role }); // Add this debug log
+
+    if (!email || !password) {
+      return res.status(400).json({
+        error: "Email and password are required",
+        receivedData: req.body, // Add this to see what data was received
+      });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: "User already exists" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Create new user
+    const user = new User({
+      email,
+      password: hashedPassword,
+      role: role || "user", // Default to 'user' if no role specified
+    });
+
     await user.save();
-    res.status(201).json({ message: "User created successfully" });
+
+    // Create token
+    const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, {
+      expiresIn: "24h",
+    });
+
+    res.status(201).json({
+      message: "User created successfully",
+      token,
+      role: user.role,
+    });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error("Signup error:", error);
+    res.status(500).json({
+      error: "Error creating user",
+      message:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
   }
 };
 

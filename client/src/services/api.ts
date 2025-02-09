@@ -44,7 +44,7 @@ export interface Participant {
     fullName: string;
     age: number;
     gender: string;
-    scheduledDate?: string; 
+    scheduledDate?: string;
 }
 
 export const DEMO_PARTICIPANTS: Participant[] = [
@@ -101,7 +101,7 @@ export interface LoginResponse {
 
 export const loginUser = async (credentials: LoginCredentials): Promise<LoginResponse> => {
     try {
-        const response = await fetch('/api/login', {
+        const response = await fetch('http://localhost:8080/api/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -112,7 +112,48 @@ export const loginUser = async (credentials: LoginCredentials): Promise<LoginRes
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.message || 'Login failed');
+            throw new Error(data.error || 'Login failed');
+        }
+
+        return {
+            success: true,
+            token: data.token,
+            role: data.role
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            message: error.message || 'An error occurred during login'
+        };
+    }
+};
+
+export interface SignupCredentials {
+    email: string;
+    password: string;
+    role: string;
+}
+
+export interface SignupResponse {
+    message: string;
+    token: string;
+    role: string;
+}
+
+export const signupUser = async (credentials: SignupCredentials): Promise<SignupResponse> => {
+    try {
+        const response = await fetch(`${process.env.SERVER_URL}/api/auth/signup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(credentials),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Signup failed');
         }
 
         return data;

@@ -4,7 +4,7 @@ import cors from "cors";
 import routes from "./routes.js";
 
 const app = express();
-const PORT = process.env.PORT || 2025;
+const PORT = process.env.PORT || 8080;
 const MONGODB_URI =
   "mongodb+srv://ashutosh:ashutosh@cluster0.bppcfxz.mongodb.net/";
 
@@ -12,14 +12,23 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Add this middleware to log all incoming requests
+app.use((req, res, next) => {
+  console.log("Incoming request:", {
+    method: req.method,
+    path: req.path,
+    body: req.body,
+    headers: req.headers,
+  });
+  next();
+});
+
 mongoose
   .connect(MONGODB_URI)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
-
 app.use("/api", routes);
-
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
