@@ -18,7 +18,7 @@ const Login = () => {
       ...prev,
       [name]: value,
     }));
-    // Clear error when user starts typing
+
     if (error) setError(null);
   };
 
@@ -30,7 +30,7 @@ const Login = () => {
     try {
       const response = await loginUser(formData);
       if (response.success) {
-        // Store token if needed
+        
         if (response.token) {
           localStorage.setItem("token", response.token);
         }

@@ -25,7 +25,6 @@ export interface DemographicData {
 
 export const submitDemographicData = async (data: DemographicData) => {
     try {
-        // Replace with your actual API endpoint
         const response = await fetch('/api/demographics', {
             method: 'POST',
             headers: {
@@ -45,10 +44,9 @@ export interface Participant {
     fullName: string;
     age: number;
     gender: string;
-    scheduledDate?: string; // Optional, will be present if already scheduled
+    scheduledDate?: string; 
 }
 
-// Demo data for development
 export const DEMO_PARTICIPANTS: Participant[] = [
     {
         id: "1",
@@ -85,9 +83,7 @@ export const DEMO_PARTICIPANTS: Participant[] = [
     }
 ];
 
-// Modify fetchParticipants to return demo data
 export const fetchParticipants = async (): Promise<Participant[]> => {
-    // Simulating API delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     return DEMO_PARTICIPANTS;
 };

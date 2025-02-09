@@ -14,6 +14,7 @@ import { useState, useEffect } from "react";
 import Modal from "@/components/modal";
 import { fetchParticipants, type Participant } from "@/services/api";
 import ScheduleForm from "@/components/scheduleform";
+import HealthRecordForm from "@/components/healthrecordform";
 
 export const animals = [
   {
@@ -91,6 +92,15 @@ export default function IndexPage() {
     participantName: "",
   });
 
+  // Add new state for health record modal
+  const [healthModal, setHealthModal] = useState<{
+    isOpen: boolean;
+    participantId: string;
+  }>({
+    isOpen: false,
+    participantId: "",
+  });
+
   const loadParticipants = async () => {
     try {
       setIsLoading(true);
@@ -125,9 +135,17 @@ export default function IndexPage() {
     loadParticipants();
   };
 
-  const handleHealthRecord = async (participantId: string) => {
-    // Implement health record logic here
-    console.log("Health record for:", participantId);
+  // Update the handleHealthRecord function
+  const handleHealthRecord = (participantId: string) => {
+    setHealthModal({
+      isOpen: true,
+      participantId,
+    });
+  };
+
+  const handleHealthRecordSuccess = () => {
+    setHealthModal({ isOpen: false, participantId: "" });
+    loadParticipants();
   };
 
   // Filter participants for autocomplete with better formatting
@@ -223,6 +241,19 @@ export default function IndexPage() {
                 participantName: "",
               })
             }
+          />
+        </Modal>
+
+        {/* Add new Modal for health record */}
+        <Modal
+          isOpen={healthModal.isOpen}
+          onClose={() => setHealthModal({ isOpen: false, participantId: "" })}
+          title="Record Health Data"
+        >
+          <HealthRecordForm
+            participantId={healthModal.participantId}
+            onSuccess={handleHealthRecordSuccess}
+            onClose={() => setHealthModal({ isOpen: false, participantId: "" })}
           />
         </Modal>
 
