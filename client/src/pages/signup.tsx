@@ -29,9 +29,11 @@ const Signup = () => {
 
     try {
       const response = await signupUser(formData);
-      if (response.token) {
+      if (response.success && response.token) {
         localStorage.setItem("token", response.token);
         navigate("/");
+      } else {
+        setError(response.message || "Signup failed");
       }
     } catch (err: any) {
       setError(err.message || "Failed to signup. Please try again.");

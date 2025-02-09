@@ -142,7 +142,7 @@ export interface SignupResponse {
 
 export const signupUser = async (credentials: SignupCredentials): Promise<SignupResponse> => {
     try {
-        const response = await fetch(`${process.env.SERVER_URL}/api/auth/signup`, {
+        const response = await fetch('http://localhost:8080/api/auth/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -153,12 +153,22 @@ export const signupUser = async (credentials: SignupCredentials): Promise<Signup
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.error || 'Signup failed');
+            throw new Error(data.error || data.message || 'Signup failed');
         }
 
-        return data;
-    } catch (error) {
-        throw error;
+        return {
+            success: true,
+            token: data.token,
+            role: data.role,
+            message: data.message
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            message: error.message || 'An error occurred during signup',
+            token: '',
+            role: ''
+        };
     }
 };
 

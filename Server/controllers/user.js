@@ -51,8 +51,7 @@ export const signup = async (req, res) => {
     console.error("Signup error:", error);
     res.status(500).json({
       error: "Error creating user",
-      message:
-        process.env.NODE_ENV === "development" ? error.message : undefined,
+      message: error.message, // Removed process.env check
     });
   }
 };
