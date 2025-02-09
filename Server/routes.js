@@ -1,15 +1,13 @@
-import express from 'express';
-import Parti from './Parti.js';
-import Data from './Data.js';
-let router = express.Router();
+import express from "express";
+import userRoutes from "./routes/user.js";
+import participantRoutes from "./routes/participant.js";
+
+const router = express.Router();
+
+// Auth routes
+router.use("/auth", userRoutes);
+
+// Participant and health routes
+router.use("/participants", participantRoutes);
+
 export default router;
-
-router.post('/create-parti', async (req, res) => {
-  let { schedule, ...others } = req.body;
-  let _p = new Parti(schedule, others);
-  res.json(await _p.save());
-});
-
-router.post('/schedule-visit/:id', async (req, res) => {
-  let _p = await Parti.findByIdAndUpdate(req.params.id);
-});
